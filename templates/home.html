@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Psychology Study Chat</title>
+    <style>
+        /* CSS styles for the chat room */
+        body {
+            background-color: #001f3f; /* Dark blue background */
+            color: #5e5858; /* White text color */
+            font-family: Arial, sans-serif; /* Default font */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh; /* Ensure the body fills the viewport */
+            margin: 0; /* Remove default body margin */
+        }
+        .chat-container {
+            max-width: 1000px;
+            width: 600px;
+            height: 600px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f0f0f0; /* Light gray chat background */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Light shadow */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .message-container {
+            margin-bottom: 10px;
+        }
+        .user-message {
+            background-color: #f0f0f0; /* Light gray user message background */
+            padding: 10px;
+            border-radius: 5px;
+            margin-right: 20px;
+        }
+        .bot-message {
+            background-color: #cceeff; /* Light blue bot message background */
+            padding: 10px;
+            border-radius: 5px;
+            margin-left: 20px;
+        }
+        #query-form {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            margin-top: 20px;
+        }
+        #query-form input[type="text"] {
+            width: calc(100% - 100px); /* Adjust width to leave space for the button */
+            padding: 8px;
+            margin-top: 5px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        #query-form input[type="submit"] {
+            background-color: #007bff; /* Blue submit button background */
+            color: #fff; /* White button text color */
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #query-form input[type="submit"]:hover {
+            background-color: #0056b3; /* Darker blue on hover */
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <h1>Welcome to MindMate: A Psychology Study Pal</h1> <!-- Heading -->
+        <div id="chat-history"></div>
+        <form id="query-form">
+            <input type="text" id="query" name="query" placeholder="Enter your query...">
+            <input type="submit" value="Submit">
+        </form>
+    </div>
+
+    <script>
+        // JavaScript code for handling form submission and displaying messages
+        const form = document.getElementById('query-form');
+        const chatHistory = document.getElementById('chat-history');
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const formData = new FormData(form);
+            const query = formData.get('query');
+            form.reset();
+            const response = await fetch('/query', {
+                method: 'POST',
+                body: new URLSearchParams({ query }),
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+            });
+            const data = await response.json();
+            displayMessage('You:', query);
+            displayMessage('Bot:', data.output);
+        });
+
+        function displayMessage(sender, message) {
+            const messageContainer = document.createElement('div');
+            messageContainer.classList.add('message-container');
+            messageContainer.innerHTML = `<span class="${sender === 'You:' ? 'user-message' : 'bot-message'}">${sender} ${message}</span>`;
+            chatHistory.appendChild(messageContainer);
+        }
+    </script>
+</body>
+</html>

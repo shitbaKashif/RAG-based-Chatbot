@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Psycology Study Chat</title>
+    <style>
+        /* CSS styles for the chat room */
+        .chat-container {
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .message-container {
+            margin-bottom: 10px;
+        }
+        .user-message {
+            background-color: #f0f0f0;
+            padding: 10px;
+            border-radius: 5px;
+            margin-right: 20px;
+        }
+        .bot-message {
+            background-color: #cceeff;
+            padding: 10px;
+            border-radius: 5px;
+            margin-left: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <h1>Welcome to Personal therapy Chat</h1>
+        <div id="chat-history"></div>
+        <form id="query-form">
+            <label for="query">Enter your query:</label><br>
+            <input type="text" id="query" name="query"><br><br>
+            <input type="submit" value="Submit">
+        </form>
+        <!-- Add the button -->
+        <button id="model-button">Model</button>
+    </div>
+
+    <script>
+        // JavaScript code for handling form submission and displaying messages
+        const form = document.getElementById('query-form');
+        const chatHistory = document.getElementById('chat-history');
+        const modelButton = document.getElementById('model-button'); // Add this line
+
+        // Add event listener for the model button
+        modelButton.addEventListener('click', async () => {
+            const response = await fetch('/model');
+            // Handle the response as needed
+        });
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const formData = new FormData(form);
+            const query = formData.get('query');
+            form.reset();
+            const response = await fetch('/query', {
+                method: 'POST',
+                body: new URLSearchParams({ query }),
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+            });
+            const data = await response.json();
+            displayMessage('You:', query);
+            displayMessage('Bot:', data.output);
+        });
+
+        function displayMessage(sender, message) {
+            const messageContainer = document.createElement('div');
+            messageContainer.classList.add('message-container');
+            messageContainer.innerHTML = `<span class="${sender === 'You:' ? 'user-message' : 'bot-message'}">${sender} ${message}</span>`;
+            chatHistory.appendChild(messageContainer);
+        }
+    </script>
+</body>
+</html>
